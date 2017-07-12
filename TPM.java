@@ -51,7 +51,7 @@ import java.util.Date;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-public class Frame extends JFrame {
+public class TPM extends JFrame {
 
     // init static variables
     private static final long serialVersionUID = 7379608572441765481L;
@@ -76,7 +76,7 @@ public class Frame extends JFrame {
     String[][] db;
     List<String> lines = new ArrayList<String>();
     
-    public Frame(String name) {
+    public TPM(String name) {
         super(name);
     }
     
@@ -137,7 +137,7 @@ public class Frame extends JFrame {
     private static void createAndShowGUI() {
         
         //Create and set up the window.
-        Frame frame = new Frame("Frame");
+        TPM frame = new TPM("TPM");
         frame.initialize();
         frame.setTitle("tpm");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
