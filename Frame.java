@@ -30,7 +30,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-/* could implement
+/* Code formatting and snippets taken from Oracle's documentation
+ * 
+ * Could implement
  *     - items sorted by date
  */
 
