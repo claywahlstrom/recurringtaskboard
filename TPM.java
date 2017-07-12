@@ -261,14 +261,14 @@ public class TPM extends JFrame {
     
     // return number of days from today
     // includes positive and negative differences
-    public int daysFromToday(String startDate) {
-        System.out.println("startDate = " + startDate);
+    public int daysFromToday(String nextDate) {
+        System.out.println("nextDate = " + nextDate);
         SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
         
         // parse, add, and reformat
         int daysBetween = 0;
         try {
-            Date datedate = parser.parse(startDate);
+            Date datedate = parser.parse(nextDate);
             Calendar date = Calendar.getInstance();
             date.setTime(datedate);
             Calendar today = Calendar.getInstance();
@@ -286,6 +286,8 @@ public class TPM extends JFrame {
                     daysBetween--;
                 }
             }
+            // else, daysBetween is 0
+            
         } catch (ParseException pe) {
             pe.printStackTrace();
         }
