@@ -78,8 +78,8 @@ public class TPM extends JFrame {
     static GridLayout experimentLayout;
     static String finalString;
     
-    String[][] db;
-    List<String> lines = new ArrayList<String>();
+    private String[][] db;
+    private List<String> lines = new ArrayList<String>();
     
     public TPM(String name) {
         super(name);
@@ -98,7 +98,6 @@ public class TPM extends JFrame {
                     if (cloudExists) {
                         saveToFile(cloudPath + FILENAME);
                     }
-
                     updateDaysUntil(i);
                 }
             }
