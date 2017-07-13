@@ -48,26 +48,27 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Calendar;
 import java.util.Date;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class TPM extends JFrame {
 
     // init static variables
-    private static final long serialVersionUID = 7379608572441765481L;
-    public static final String GAP_LIST[] = {"0", "10", "15", "20"};
-    public static final int MAX_GAP = 20;
-    public static final String FILENAME = "java-tpm-db.txt";
-    public static final int WIDTH = 5;
-    public static int COUNT;
+    private final long serialVersionUID = 7379608572441765481L;
+    public final String GAP_LIST[] = {"0", "10", "15", "20"};
+    public final int MAX_GAP = 20;
+    public final String FILENAME = "java-tpm-db.txt";
+    public final int WIDTH = 5;
+    public int COUNT;
     
     // init static arrays
-    private static JLabel[] headerLabels;
-    private static JLabel[] dayLabels;
-    private static JLabel[] labels;
-    private static JLabel[] dates;
-    private static JTextArea[] tas;
-    private static JButton[] buttons;
+    private JLabel[] headerLabels;
+    private JLabel[] dayLabels;
+    private JLabel[] labels;
+    private JLabel[] dates;
+    private JTextArea[] tas;
+    private JButton[] buttons;
     
     //textFilePath
     private String textFilePath = "C:/Users/" +  System.getProperty("user.name") + "/Google Drive/";
@@ -110,7 +111,8 @@ public class TPM extends JFrame {
     }
     
     // parses db file, reserves space for the JPanel
-    public void initialize() {
+    @SuppressWarnings("resource")
+	public void initialize() {
         try {
             System.out.println(new File(".").getAbsoluteFile());
             Scanner scr = new Scanner(new File("tpm/" + FILENAME));
@@ -148,7 +150,7 @@ public class TPM extends JFrame {
         buttons = new JButton[COUNT];
     }
 
-    private static void createAndShowGUI() {
+    private void createAndShowGUI() {
         
         //Create and set up the window.
         TPM frame = new TPM("TPM");
@@ -314,6 +316,7 @@ public class TPM extends JFrame {
     
     // main, duh...
     public static void main(String[] args) {
+    	
         /* Use an appropriate Look and Feel */
         try {
             // UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -334,7 +337,9 @@ public class TPM extends JFrame {
         // creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                createAndShowGUI();
+            	//adding to get rid of static vars and method
+                TPM tpmController = new TPM("");
+                tpmController.createAndShowGUI();
             }
         });
     }
