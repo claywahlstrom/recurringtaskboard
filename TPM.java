@@ -62,12 +62,15 @@ public class TPM extends JFrame {
     public static int COUNT;
     
     // init static arrays
-    static JLabel[] headerLabels;
-    static JLabel[] dayLabels;
-    static JLabel[] labels;
-    static JLabel[] dates;
-    static JTextArea[] tas;
-    static JButton[] buttons;
+    private static JLabel[] headerLabels;
+    private static JLabel[] dayLabels;
+    private static JLabel[] labels;
+    private static JLabel[] dates;
+    private static JTextArea[] tas;
+    private static JButton[] buttons;
+    
+    //textFilePath
+    private String textFilePath = "C:/Users/" +  System.getProperty("user.name") + "/Google Drive/";
     
     // init static classes
     static GridLayout experimentLayout;
@@ -88,8 +91,18 @@ public class TPM extends JFrame {
                     System.out.println("Adding date to index " + i);
                     addDate(i);
                     saveToFile("tpm/" + FILENAME);
-                    String computerUser = System.getProperty("user.name");
-                    saveToFile("C:/Users/" + computerUser + "/Google Drive/" + FILENAME);
+                    
+                    //just a checker to make sure the file is there
+                    if (!new File(textFilePath + FILENAME).exists()){
+                       if(!new File(textFilePath).exists()){
+                    	   //creates directory
+                    	   File dir = new File(textFilePath);
+                    	   dir.mkdir();
+                       }
+                       	writeFile(textFilePath+ FILENAME, "");	
+                    }
+                    
+                    saveToFile(textFilePath + FILENAME);
                     updateDaysUntil(i);
                 }
             }
@@ -184,7 +197,7 @@ public class TPM extends JFrame {
             dates[i].setFont(font);
             dates[i].setHorizontalAlignment(JLabel.CENTER);
             
-            tas[i] = new JTextArea(db[i][2], 3, 10);
+            tas[i] = new JTextArea(db[i][2]);
             tas[i].setFont(font);
             
             buttons[i] = new JButton("Submit");
@@ -216,14 +229,13 @@ public class TPM extends JFrame {
         SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
         
         // parse, add, and reformat
-        Date date = new Date();
         int days = Integer.parseInt(tas[i].getText());
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, days);
-        String nexxt = parser.format(cal.getTime());
+        String next = parser.format(cal.getTime());
         
         // change date
-        db[i][1] = nexxt;
+        db[i][1] = next;
         dates[i].setText(db[i][1]);
         
         // reset textarea back to default days
@@ -245,14 +257,14 @@ public class TPM extends JFrame {
     }
     
     // basic filewriter using filename and text to write
-    public void writeFile(String name, String text) {
+    public void writeFile(String path, String text) {
         try {
-            File file = new File(name);
+            File file = new File(path);
             file.createNewFile();
             FileWriter fw = new FileWriter(file);
             fw.write(text);
             fw.close();
-            System.out.println(name + " written");
+            System.out.println(path + " written");
         } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(0);
@@ -297,7 +309,7 @@ public class TPM extends JFrame {
     
     // updates the "days until" field of index "i"
     public void updateDaysUntil(int i) {
-        dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
+    	dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
     }
     
     // main, duh...
