@@ -36,7 +36,8 @@
  *     - items sorted by date
  */
 
-package tpmpackage;
+
+package tpmboard;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -55,9 +56,10 @@ public class TPM extends JFrame {
 
     // init static variables
     private static final long serialVersionUID = 7379608572441765481L;
-    public static final String GAP_LIST[] = {"0", "10", "15", "20"};
-    public static final int MAX_GAP = 20;
     public static final String FILENAME = "java-tpm-db.txt";
+    public static final String GAP_LIST[] = {"0", "10", "15", "20"};
+    public static final String USERNAME = System.getProperty("user.name");
+    public static final int MAX_GAP = 20;
     public static final int WIDTH = 5;
     public static int COUNT;
     
@@ -70,7 +72,7 @@ public class TPM extends JFrame {
     private static JButton[] buttons;
     
     //textFilePath
-    private String textFilePath = "C:/Users/" +  System.getProperty("user.name") + "/Google Drive/";
+    private String textFilePath = "C:/Users/" +  USERNAME + "/Google Drive/";
     
     // init static classes
     static GridLayout experimentLayout;
@@ -91,7 +93,7 @@ public class TPM extends JFrame {
                     System.out.println("Adding date to index " + i);
                     addDate(i);
                     saveToFile("tpm/" + FILENAME);
-                    
+    
                     //just a checker to make sure the file is there
                     if (!new File(textFilePath + FILENAME).exists()){
                        if(!new File(textFilePath).exists()){
@@ -103,6 +105,7 @@ public class TPM extends JFrame {
                     }
                     
                     saveToFile(textFilePath + FILENAME);
+
                     updateDaysUntil(i);
                 }
             }
@@ -112,7 +115,7 @@ public class TPM extends JFrame {
     // parses db file, reserves space for the JPanel
     public void initialize() {
         try {
-            System.out.println(new File(".").getAbsoluteFile());
+            System.out.println("pwd = " + new File(".").getAbsoluteFile());
             Scanner scr = new Scanner(new File("tpm/" + FILENAME));
             scr.useDelimiter("\n");
             while (scr.hasNext()) {
