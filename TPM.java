@@ -32,8 +32,11 @@
  
 /* Code formatting and snippets taken from Oracle's documentation
  * 
+ * Need to do!
+ *     - convert statics to an instance and update vars with setters and getters
  * Could implement
  *     - items sorted by date
+ * 
  */
 
 
@@ -58,6 +61,7 @@ public class TPM extends JFrame {
     private static final long serialVersionUID = 7379608572441765481L;
     public static final String FILENAME = "java-tpm-db.txt";
     public static final String GAP_LIST[] = {"0", "10", "15", "20"};
+    private static final String PACK_NAME = new TPM("TPM").getClass().getPackage().getName();
     public static final String USERNAME = System.getProperty("user.name");
     public static final int MAX_GAP = 20;
     public static final int WIDTH = 5;
@@ -71,8 +75,10 @@ public class TPM extends JFrame {
     private static JTextArea[] tas;
     private static JButton[] buttons;
     
-    //textFilePath
-    private String textFilePath = "C:/Users/" +  USERNAME + "/Google Drive/";
+    static boolean cloudExists;
+    
+    // cloudPath
+    private String cloudPath = "C:/Users/" +  USERNAME + "/Google Drive/";
     
     // init static classes
     static GridLayout experimentLayout;
@@ -92,19 +98,12 @@ public class TPM extends JFrame {
                 if (ae.getSource() == buttons[i]) {
                     System.out.println("Adding date to index " + i);
                     addDate(i);
-                    saveToFile("tpm/" + FILENAME);
+                    saveToFile(PACK_NAME + "/" + FILENAME);
     
-                    //just a checker to make sure the file is there
-                    if (!new File(textFilePath + FILENAME).exists()){
-                       if(!new File(textFilePath).exists()){
-                    	   //creates directory
-                    	   File dir = new File(textFilePath);
-                    	   dir.mkdir();
-                       }
-                       	writeFile(textFilePath+ FILENAME, "");	
+                    // just a checker to make sure the file is there
+                    if (cloudExists) {
+                        saveToFile(cloudPath + FILENAME);
                     }
-                    
-                    saveToFile(textFilePath + FILENAME);
 
                     updateDaysUntil(i);
                 }
@@ -116,7 +115,7 @@ public class TPM extends JFrame {
     public void initialize() {
         try {
             System.out.println("pwd = " + new File(".").getAbsoluteFile());
-            Scanner scr = new Scanner(new File("tpm/" + FILENAME));
+            Scanner scr = new Scanner(new File(PACK_NAME + "/" + FILENAME));
             scr.useDelimiter("\n");
             while (scr.hasNext()) {
                 lines.add(scr.next());
@@ -133,7 +132,7 @@ public class TPM extends JFrame {
             }
             COUNT = db.length;
             
-            saveToFile("tpm/backup.txt");
+            saveToFile(PACK_NAME + "/backup.txt");
             
         } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
@@ -149,6 +148,13 @@ public class TPM extends JFrame {
         dates = new JLabel[COUNT];
         tas = new JTextArea[COUNT];
         buttons = new JButton[COUNT];
+        
+        if(!new File(cloudPath).exists()){
+            System.out.println("Cloud service 'Google Drive' doesn't exist");
+            cloudExists = false;
+        } else {
+            cloudExists = true;
+        }
     }
 
     private static void createAndShowGUI() {
@@ -312,7 +318,7 @@ public class TPM extends JFrame {
     
     // updates the "days until" field of index "i"
     public void updateDaysUntil(int i) {
-    	dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
+        dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
     }
     
     // main, duh...
