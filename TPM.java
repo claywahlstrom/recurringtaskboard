@@ -69,14 +69,14 @@ public class TPM extends JFrame {
     private static JTextArea[] tas;
     private static JButton[] buttons;
     
-    static boolean cloudExists;
+    private static boolean cloudExists;
     
     // cloudPath
     private String cloudPath = "C:/Users/" +  USERNAME + "/Google Drive/";
     
     // init static classes
-    static GridLayout experimentLayout;
-    static String finalString;
+    private static GridLayout experimentLayout;
+    private static String finalString;
     
     private String[][] db;
     private List<String> lines = new ArrayList<String>();
