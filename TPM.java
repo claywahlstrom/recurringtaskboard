@@ -52,13 +52,14 @@ public class TPM extends JFrame {
 
     // init static variables
     private static final long serialVersionUID = 7379608572441765481L;
-    public static final String FILENAME = "java-tpm-db.txt";
-    public static final String GAP_LIST[] = {"0", "10", "15", "20"};
+    private static final String FILENAME = "java-tpm-db.txt";
+    private static final String GAP_LIST[] = {"0", "10", "15", "20"};
     private static final String PACK_NAME = new TPM("TPM").getClass().getPackage().getName();
-    public static final String USERNAME = System.getProperty("user.name");
-    public static final int MAX_GAP = 20;
-    public static final int WIDTH = 5;
-    public static int COUNT;
+    private static final String PRGM_NAME = "Total Productive Maintenance";
+    private static final String USERNAME = System.getProperty("user.name");
+    private static final int MAX_GAP = 20;
+    private static final int WIDTH = 5;
+    private static int COUNT;
     
     // init static arrays
     private static JLabel[] headerLabels;
@@ -153,9 +154,9 @@ public class TPM extends JFrame {
     private static void createAndShowGUI() {
         
         //Create and set up the window.
-        TPM frame = new TPM("TPM");
+        TPM frame = new TPM(PRGM_NAME);
         frame.initialize();
-        frame.setTitle("tpm");
+        frame.setTitle(PRGM_NAME);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Set up the content pane.
         frame.addComponentsToPane(frame.getContentPane());
