@@ -36,7 +36,7 @@
  *     - items sorted by date
  */
 
-package tpm;
+package tpmpackage;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -88,7 +88,8 @@ public class TPM extends JFrame {
                     System.out.println("Adding date to index " + i);
                     addDate(i);
                     saveToFile("tpm/" + FILENAME);
-                    saveToFile("C:/Users/Clayton/Google Drive/" + FILENAME);
+                    String computerUser = System.getProperty("user.name");
+                    saveToFile("C:/Users/" + computerUser + "/Google Drive/" + FILENAME);
                     updateDaysUntil(i);
                 }
             }
@@ -232,7 +233,7 @@ public class TPM extends JFrame {
     // saves the formatted datebase (db) to a file
     // assumes db exists and is filled
     // writes finalString to file using writeFile
-    public void saveToFile(String name) {
+    public void saveToFile(String path) {
         finalString = new String();
         for (int i = 0; i < COUNT; i++) {
             finalString += db[i][0] + " " + db[i][1] + " " + db[i][2];
@@ -240,7 +241,7 @@ public class TPM extends JFrame {
                 finalString += "\r\n";
             }
         }
-        writeFile(name, finalString);
+        writeFile(path, finalString);
     }
     
     // basic filewriter using filename and text to write
