@@ -233,7 +233,7 @@ public class TPM extends JFrame {
     // saves the formatted datebase (db) to a file
     // assumes db exists and is filled
     // writes finalString to file using writeFile
-    public void saveToFile(String name) {
+    public void saveToFile(String path) {
         finalString = new String();
         for (int i = 0; i < COUNT; i++) {
             finalString += db[i][0] + " " + db[i][1] + " " + db[i][2];
@@ -241,18 +241,18 @@ public class TPM extends JFrame {
                 finalString += "\r\n";
             }
         }
-        writeFile(name, finalString);
+        writeFile(path, finalString);
     }
     
     // basic filewriter using filename and text to write
-    public void writeFile(String name, String text) {
+    public void writeFile(String path, String text) {
         try {
-            File file = new File(name);
+            File file = new File(path);
             file.createNewFile();
             FileWriter fw = new FileWriter(file);
             fw.write(text);
             fw.close();
-            System.out.println(name + " written");
+            System.out.println(path + " written");
         } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(0);
