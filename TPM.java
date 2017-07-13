@@ -36,7 +36,7 @@
  *     - items sorted by date
  */
 
-package tpm;
+package tpmboard;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -55,9 +55,10 @@ public class TPM extends JFrame {
 
     // init static variables
     private static final long serialVersionUID = 7379608572441765481L;
-    public static final String GAP_LIST[] = {"0", "10", "15", "20"};
-    public static final int MAX_GAP = 20;
     public static final String FILENAME = "java-tpm-db.txt";
+    public static final String GAP_LIST[] = {"0", "10", "15", "20"};
+    public static final String USERNAME = System.getProperty("user.name");
+    public static final int MAX_GAP = 20;
     public static final int WIDTH = 5;
     public static int COUNT;
     
@@ -88,7 +89,7 @@ public class TPM extends JFrame {
                     System.out.println("Adding date to index " + i);
                     addDate(i);
                     saveToFile("tpm/" + FILENAME);
-                    saveToFile("C:/Users/Clayton/Google Drive/" + FILENAME);
+                    saveToFile("C:/Users/" + USERNAME + "/Google Drive/" + FILENAME);
                     updateDaysUntil(i);
                 }
             }
@@ -98,7 +99,7 @@ public class TPM extends JFrame {
     // parses db file, reserves space for the JPanel
     public void initialize() {
         try {
-            System.out.println(new File(".").getAbsoluteFile());
+            System.out.println("pwd = " + new File(".").getAbsoluteFile());
             Scanner scr = new Scanner(new File("tpm/" + FILENAME));
             scr.useDelimiter("\n");
             while (scr.hasNext()) {
