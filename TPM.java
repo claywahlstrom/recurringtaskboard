@@ -23,12 +23,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-/* Code formatting and snippets taken from Oracle's documentation
- * 
+/* 
  * Need to do!
- *     - convert statics to an instance and update vars with setters and getters
+ *     - make setters and getters
  * Could implement
- *     - items sorted by date
+ *     - sort items by date
  * 
  */
 
@@ -99,7 +98,7 @@ public class TPM extends JFrame {
                         saveToFile(cloudPath + FILENAME);
                     }
 
-                    updateDaysUntil(i);
+                    updateDaysUntil();
                 }
             }
         }
@@ -311,6 +310,11 @@ public class TPM extends JFrame {
     // updates the "days until" field of index "i"
     public void updateDaysUntil(int i) {
         dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
+    }
+    public void updateDaysUntil() {
+        for (int i = 0; i < COUNT; i++) {
+            dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
+        }
     }
     
     // main, duh...
