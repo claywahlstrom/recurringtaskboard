@@ -55,7 +55,7 @@ public class TPM extends JFrame {
     private final String FILENAME = "java-tpm-db.txt";
     private final String GAP_LIST[] = {"0", "10", "15", "20"};
     private final String PACK_NAME = this.getClass().getPackage().getName();
-    private final String PRGM_NAME = "Total Productive Maintenance";
+    private static final String PRGM_NAME = "Total Productive Maintenance";
     private final String USERNAME = System.getProperty("user.name");
     private final int MAX_GAP = 20;
     private final int WIDTH = 5;
@@ -151,17 +151,17 @@ public class TPM extends JFrame {
         }
     }
 
-    private void createAndShowGUI(TPM frame) {
+    private void createAndShowGUI() {
         
         
-        frame.initialize();
-        frame.setTitle(PRGM_NAME);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.initialize();
+        this.setTitle(PRGM_NAME);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Set up the content pane.
-        frame.addComponentsToPane(frame.getContentPane());
+        this.addComponentsToPane(this.getContentPane());
         //Display the window.
-        frame.pack();
-        frame.setVisible(true);
+        this.pack();
+        this.setVisible(true);
     }
     
     public void addComponentsToPane(final Container pane) {
@@ -321,7 +321,7 @@ public class TPM extends JFrame {
             public void run() {
                 //gets rid of static
                 TPM tpmController = new TPM(PRGM_NAME);
-                tpmController.createAndShowGUI(tpmController);
+                tpmController.createAndShowGUI();
             }
         });
     }
