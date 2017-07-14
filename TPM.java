@@ -300,7 +300,7 @@ public class TPM extends JFrame {
                     daysBetween--;
                 }
             }
-            // else, daysBetween is 0
+            // else, daysBetween stays 0
             
         } catch (ParseException pe) {
             pe.printStackTrace();
