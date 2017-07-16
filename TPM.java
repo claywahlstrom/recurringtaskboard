@@ -68,6 +68,8 @@ public class TPM extends JFrame {
     private JTextArea[] tas;
     private JButton[] buttons;
     
+    private JButton updateButton;
+    
     boolean cloudExists;
     
     // cloudPath
@@ -101,6 +103,11 @@ public class TPM extends JFrame {
                     updateDaysUntil();
                 }
             }
+            
+            if (ae.getSource() == updateButton) {
+                updateDaysUntil();
+            }
+            
         }
     }
     
@@ -213,6 +220,16 @@ public class TPM extends JFrame {
             compsToExperiment.add(buttons[i]);
         }
         
+        JPanel updatePanel = new JPanel();
+        updatePanel.setLayout(new FlowLayout());
+        
+        updateButton = new JButton();
+        updateButton.setFont(font);
+        updateButton.addActionListener(new ButtonHandler());
+        updateButton.setText("Update days until");
+        
+        updatePanel.add(updateButton);
+        
         experimentLayout.setHgap(5);
         //Set up the vertical gap value
         experimentLayout.setVgap(5);
@@ -220,6 +237,8 @@ public class TPM extends JFrame {
         experimentLayout.layoutContainer(compsToExperiment);
         
         pane.add(compsToExperiment, BorderLayout.NORTH);
+        pane.add(new JSeparator(), BorderLayout.CENTER);
+        pane.add(updatePanel, BorderLayout.SOUTH);
 
     }
     
