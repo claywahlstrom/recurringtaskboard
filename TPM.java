@@ -54,11 +54,12 @@ public class TPM extends JFrame {
     private final String FILENAME = "java-tpm-db.txt";
     private final String GAP_LIST[] = {"0", "10", "15", "20"};
     private final String PACK_NAME = this.getClass().getPackage().getName();
-    private static final String PRGM_NAME = "Total Productive Maintenance";
     private final String USERNAME = System.getProperty("user.name");
     private final int MAX_GAP = 20;
     private final int WIDTH = 5;
     private int COUNT;
+    
+    private static final String PRGM_NAME = "Total Productive Maintenance";
     
     // init arrays
     private JLabel[] headerLabels;
@@ -70,14 +71,14 @@ public class TPM extends JFrame {
     
     private JButton updateButton;
     
-    boolean cloudExists;
     
     // cloudPath
+    boolean cloudExists;
     private String cloudPath = "C:/Users/" +  USERNAME + "/Google Drive/";
     
-    // init static classes
-    static GridLayout experimentLayout;
-    static String finalString;
+    // init classes
+    GridLayout experimentLayout;
+    String finalString;
     
     String[][] db;
     List<String> lines = new ArrayList<String>();
