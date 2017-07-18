@@ -50,41 +50,42 @@ import javax.swing.border.EmptyBorder;
 public class TPM extends JFrame {
 
     // init variables
-    private final long serialVersionUID = 7379608572441765481L;
+    private final Font BOLD_FONT = new Font("Verdana", Font.BOLD, 16);
+    private final Font DEF_FONT = new Font("Verdana", Font.PLAIN, 16);
     private final String FILENAME = "java-tpm-db.txt";
     private final String GAP_LIST[] = {"0", "10", "15", "20"};
     private final String PACK_NAME = this.getClass().getPackage().getName();
+    private final String PRGM_NAME = "Total Productive Maintenance";
     private final String USERNAME = System.getProperty("user.name");
+    private final String[] HEADERS = {"Task", "Days until", "Date", "Days", ""};
     private final int MAX_GAP = 20;
     private final int WIDTH = 5;
+    
     private int COUNT;
     
-    private static final String PRGM_NAME = "Total Productive Maintenance";
-    
-    // init arrays
+    // init JThings
     private JLabel[] headerLabels;
     private JLabel[] dayLabels;
     private JLabel[] labels;
     private JLabel[] dates;
     private JTextArea[] tas;
     private JButton[] buttons;
-    
     private JButton updateButton;
     
     
     // cloudPath
-    boolean cloudExists;
+    private boolean cloudExists;
     private String cloudPath = "C:/Users/" +  USERNAME + "/Google Drive/";
     
     // init classes
-    GridLayout experimentLayout;
-    String finalString;
+    private GridLayout experimentLayout;
+    private String finalString;
     
-    String[][] db;
-    List<String> lines = new ArrayList<String>();
+    private String[][] db;
+    private List<String> lines = new ArrayList<String>();
     
-    public TPM(String name) {
-        super(name);
+    public TPM() {
+        super();
     }
     
     // handles button events
@@ -100,7 +101,6 @@ public class TPM extends JFrame {
                     if (cloudExists) {
                         saveToFile(cloudPath + FILENAME);
                     }
-
                     updateDaysUntil();
                 }
             }
@@ -140,8 +140,6 @@ public class TPM extends JFrame {
             System.exit(0);
         }
 
-        experimentLayout = new GridLayout(COUNT + 1, WIDTH); // +1 for header row
-        
         // initialize J stuff based on number of items
         headerLabels = new JLabel[WIDTH];
         labels = new JLabel[COUNT];
@@ -154,63 +152,63 @@ public class TPM extends JFrame {
             System.out.println("Cloud service 'Google Drive' doesn't exist");
             cloudExists = false;
         } else {
+            System.out.println("Cloud service 'Google Drive' exists");
             cloudExists = true;
         }
     }
 
     private void createAndShowGUI() {
-        
-        
         this.initialize();
         this.setTitle(PRGM_NAME);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //Set up the content pane.
+        // Set up the content pane.
         this.addComponentsToPane(this.getContentPane());
-        //Display the window.
+        // Display the window.
         this.pack();
         this.setVisible(true);
     }
     
     public void addComponentsToPane(final Container pane) {
+        
+        experimentLayout = new GridLayout(COUNT + 1, WIDTH); // +1 for header row
+        
         final JPanel compsToExperiment = new JPanel();
         compsToExperiment.setBorder(new EmptyBorder(10, 10, 10, 10));
         compsToExperiment.setLayout(experimentLayout);
-        Font font = new Font("Verdana", Font.PLAIN, 16);
 
-        //Set up components preferred size
-        JButton b = new JButton("Just fake button");
-        Dimension buttonSize = b.getPreferredSize();
-        compsToExperiment.setPreferredSize(new Dimension((int)(buttonSize.getWidth() * WIDTH)+MAX_GAP, (int)(buttonSize.getHeight() * COUNT*1.5+MAX_GAP  * 2)));
-        // compsToExperiment.setPreferredSize(new Dimension(500, 300));
-                
-        String[] headers = {"Task", "Days until", "Date", "Days", ""};
-        for (int i = 0; i < headers.length; i++) {
-            headerLabels[i] = new JLabel(headers[i]);
-            headerLabels[i].setFont(new Font("Verdana", Font.BOLD, 16));
+        // Set up components preferred size
+        Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
+        Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * WIDTH) + MAX_GAP * 2,
+                                                (int)(buttonSize.getHeight() * COUNT * 1.5 + MAX_GAP * 2));
+        compsToExperiment.setPreferredSize(preferredSize);
+
+        for (int i = 0; i < HEADERS.length; i++) {
+            headerLabels[i] = new JLabel(HEADERS[i]);
+            headerLabels[i].setFont(BOLD_FONT);
             headerLabels[i].setHorizontalAlignment(JLabel.CENTER);
             compsToExperiment.add(headerLabels[i]);
         }
-        // Add buttons to experimentLayout with Grid Layout
 
+        // Add buttons to experimentLayout with Grid Layout
         for (int i = 0; i < COUNT; i++) {
             
             labels[i] = new JLabel(db[i][0]);
-            labels[i].setFont(font);
+            labels[i].setFont(DEF_FONT);
             
             dayLabels[i] = new JLabel();
             updateDaysUntil(i);
-            dayLabels[i].setFont(font);
+            dayLabels[i].setFont(DEF_FONT);
             dayLabels[i].setHorizontalAlignment(JLabel.CENTER);
             
             dates[i] = new JLabel(db[i][1]);
-            dates[i].setFont(font);
+            dates[i].setFont(DEF_FONT);
             dates[i].setHorizontalAlignment(JLabel.CENTER);
             
             tas[i] = new JTextArea(db[i][2]);
-            tas[i].setFont(font);
+            tas[i].setFont(DEF_FONT);
             
             buttons[i] = new JButton("Submit");
-            buttons[i].setFont(font);
+            buttons[i].setFont(DEF_FONT);
             buttons[i].addActionListener(new ButtonHandler());
             
             // add components
@@ -225,7 +223,7 @@ public class TPM extends JFrame {
         updatePanel.setLayout(new FlowLayout());
         
         updateButton = new JButton();
-        updateButton.setFont(font);
+        updateButton.setFont(DEF_FONT);
         updateButton.addActionListener(new ButtonHandler());
         updateButton.setText("Update days until");
         
@@ -344,7 +342,7 @@ public class TPM extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 //gets rid of static
-                TPM tpmController = new TPM(PRGM_NAME);
+                TPM tpmController = new TPM();
                 tpmController.createAndShowGUI();
             }
         });
