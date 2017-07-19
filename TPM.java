@@ -57,7 +57,7 @@ public class TPM extends JFrame {
     private final String PACK_NAME = this.getClass().getPackage().getName();
     private final String PRGM_NAME = "Total Productive Maintenance";
     private final String USERNAME = System.getProperty("user.name");
-    private final String[] HEADERS = {"Task", "Days until", "Date", "Days", ""};
+    private final String[] HEADERS = {"Task", "Days until", "Date", "Days", "", "Set Default"};
     private final int MAX_GAP = 20;
     private final int WIDTH = 5;
     
@@ -69,7 +69,8 @@ public class TPM extends JFrame {
     private JLabel[] labels;
     private JLabel[] dates;
     private JTextArea[] tas;
-    private JButton[] buttons;
+    private JButton[] submitButtons;
+    private JButton[] setDefaultButtons;
     private JButton updateButton;
     
     
@@ -92,7 +93,7 @@ public class TPM extends JFrame {
     private class ButtonHandler implements ActionListener {
         public void actionPerformed(ActionEvent ae) {
             for (int i = 0; i < COUNT; i++) {
-                if (ae.getSource() == buttons[i]) {
+                if (ae.getSource() == submitButtons[i]) {
                     System.out.println("Adding date to index " + i);
                     addDate(i);
                     saveToFile(PACK_NAME + "/" + FILENAME);
@@ -102,7 +103,13 @@ public class TPM extends JFrame {
                         saveToFile(cloudPath + FILENAME);
                     }
                     updateDaysUntil();
+                } else if (ae.getSource() == setDefaultButtons[i]) {
+                    //System.out.println("Adding date to index " + i);
+                    //addDate(i);
+                    setDefaultDays(i);
+                    saveToFile(PACK_NAME + "/" + FILENAME);
                 }
+                
             }
             
             if (ae.getSource() == updateButton) {
@@ -110,6 +117,145 @@ public class TPM extends JFrame {
             }
             
         }
+    }
+    
+    public void addComponentsToPane(final Container pane) {
+        
+        experimentLayout = new GridLayout(COUNT + 1, WIDTH); // +1 for header row
+        
+        final JPanel compsToExperiment = new JPanel();
+        compsToExperiment.setBorder(new EmptyBorder(10, 10, 10, 10));
+        compsToExperiment.setLayout(experimentLayout);
+
+        // Set up components preferred size
+        Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
+        Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * WIDTH) + MAX_GAP * 2,
+                                                (int)(buttonSize.getHeight() * COUNT * 1.5 + MAX_GAP * 2));
+        compsToExperiment.setPreferredSize(preferredSize);
+
+        for (int i = 0; i < HEADERS.length; i++) {
+            headerLabels[i] = new JLabel(HEADERS[i]);
+            headerLabels[i].setFont(BOLD_FONT);
+            headerLabels[i].setHorizontalAlignment(JLabel.CENTER);
+            compsToExperiment.add(headerLabels[i]);
+        }
+
+        // Add submitButtons to experimentLayout with Grid Layout
+        for (int i = 0; i < COUNT; i++) {
+            
+            labels[i] = new JLabel(db[i][0]);
+            labels[i].setFont(DEF_FONT);
+            
+            dayLabels[i] = new JLabel();
+            updateDaysUntil(i);
+            dayLabels[i].setFont(DEF_FONT);
+            dayLabels[i].setHorizontalAlignment(JLabel.CENTER);
+            
+            dates[i] = new JLabel(db[i][1]);
+            dates[i].setFont(DEF_FONT);
+            dates[i].setHorizontalAlignment(JLabel.CENTER);
+            
+            tas[i] = new JTextArea(db[i][2]);
+            tas[i].setFont(DEF_FONT);
+            
+            submitButtons[i] = new JButton("Submit");
+            submitButtons[i].setFont(DEF_FONT);
+            submitButtons[i].addActionListener(new ButtonHandler());
+            
+            // add components
+            compsToExperiment.add(labels[i]);
+            compsToExperiment.add(dayLabels[i]);
+            compsToExperiment.add(dates[i]);
+            compsToExperiment.add(tas[i]);
+            compsToExperiment.add(submitButtons[i]);
+        }
+        
+        JPanel updatePanel = new JPanel();
+        updatePanel.setLayout(new FlowLayout());
+        
+        updateButton = new JButton();
+        updateButton.setFont(DEF_FONT);
+        updateButton.addActionListener(new ButtonHandler());
+        updateButton.setText("Update days until");
+        
+        updatePanel.add(updateButton);
+        
+        experimentLayout.setHgap(5);
+        //Set up the vertical gap value
+        experimentLayout.setVgap(5);
+        //Set up the layout of the submitButtons
+        experimentLayout.layoutContainer(compsToExperiment);
+        
+        pane.add(compsToExperiment, BorderLayout.NORTH);
+        pane.add(new JSeparator(), BorderLayout.CENTER);
+        pane.add(updatePanel, BorderLayout.SOUTH);
+
+    }
+    
+    // adds date entered into JTextArea to the respective index "i" in db
+    // updates textarea and date
+    public void addDate(int i) {
+        // set up parser
+        SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
+        
+        // parse, add, and reformat
+        int days = Integer.parseInt(tas[i].getText());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, days);
+        String next = parser.format(cal.getTime());
+        
+        // change date
+        db[i][1] = next;
+        dates[i].setText(db[i][1]);
+        
+        // reset textarea back to default days
+        tas[i].setText(db[i][2]);
+    }
+    
+    private void createAndShowGUI() {
+        this.initialize();
+        this.setTitle(PRGM_NAME);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Set up the content pane.
+        this.addComponentsToPane(this.getContentPane());
+        // Display the window.
+        this.pack();
+        this.setVisible(true);
+    }
+    
+    // return number of days from today
+    // includes positive and negative differences
+    public int daysFromToday(String nextDate) {
+        System.out.println("nextDate = " + nextDate);
+        SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
+        
+        // parse, add, and reformat
+        int daysBetween = 0;
+        try {
+            Date parsedDate = parser.parse(nextDate);
+            Calendar date = Calendar.getInstance();
+            date.setTime(parsedDate);
+            Calendar today = Calendar.getInstance();
+
+            if (date.after(today)) {
+                while (date.after(today)) {
+                    date.add(Calendar.DATE, -1);
+                    daysBetween++;
+                }
+            } else if (date.before(today)) {
+                daysBetween = 1; // offset for correct calculations
+                while (date.before(today)) {
+                    
+                    date.add(Calendar.DATE, 1);
+                    daysBetween--;
+                }
+            }
+            // else, daysBetween stays 0
+            
+        } catch (ParseException pe) {
+            pe.printStackTrace();
+        }
+        return daysBetween;
     }
     
     // parses db file, reserves space for the JPanel
@@ -146,7 +292,7 @@ public class TPM extends JFrame {
         dayLabels = new JLabel[COUNT];
         dates = new JLabel[COUNT];
         tas = new JTextArea[COUNT];
-        buttons = new JButton[COUNT];
+        submitButtons = new JButton[COUNT];
         
         if(!new File(cloudPath).exists()){
             System.out.println("Cloud service 'Google Drive' doesn't exist");
@@ -155,110 +301,6 @@ public class TPM extends JFrame {
             System.out.println("Cloud service 'Google Drive' exists");
             cloudExists = true;
         }
-    }
-
-    private void createAndShowGUI() {
-        this.initialize();
-        this.setTitle(PRGM_NAME);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // Set up the content pane.
-        this.addComponentsToPane(this.getContentPane());
-        // Display the window.
-        this.pack();
-        this.setVisible(true);
-    }
-    
-    public void addComponentsToPane(final Container pane) {
-        
-        experimentLayout = new GridLayout(COUNT + 1, WIDTH); // +1 for header row
-        
-        final JPanel compsToExperiment = new JPanel();
-        compsToExperiment.setBorder(new EmptyBorder(10, 10, 10, 10));
-        compsToExperiment.setLayout(experimentLayout);
-
-        // Set up components preferred size
-        Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
-        Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * WIDTH) + MAX_GAP * 2,
-                                                (int)(buttonSize.getHeight() * COUNT * 1.5 + MAX_GAP * 2));
-        compsToExperiment.setPreferredSize(preferredSize);
-
-        for (int i = 0; i < HEADERS.length; i++) {
-            headerLabels[i] = new JLabel(HEADERS[i]);
-            headerLabels[i].setFont(BOLD_FONT);
-            headerLabels[i].setHorizontalAlignment(JLabel.CENTER);
-            compsToExperiment.add(headerLabels[i]);
-        }
-
-        // Add buttons to experimentLayout with Grid Layout
-        for (int i = 0; i < COUNT; i++) {
-            
-            labels[i] = new JLabel(db[i][0]);
-            labels[i].setFont(DEF_FONT);
-            
-            dayLabels[i] = new JLabel();
-            updateDaysUntil(i);
-            dayLabels[i].setFont(DEF_FONT);
-            dayLabels[i].setHorizontalAlignment(JLabel.CENTER);
-            
-            dates[i] = new JLabel(db[i][1]);
-            dates[i].setFont(DEF_FONT);
-            dates[i].setHorizontalAlignment(JLabel.CENTER);
-            
-            tas[i] = new JTextArea(db[i][2]);
-            tas[i].setFont(DEF_FONT);
-            
-            buttons[i] = new JButton("Submit");
-            buttons[i].setFont(DEF_FONT);
-            buttons[i].addActionListener(new ButtonHandler());
-            
-            // add components
-            compsToExperiment.add(labels[i]);
-            compsToExperiment.add(dayLabels[i]);
-            compsToExperiment.add(dates[i]);
-            compsToExperiment.add(tas[i]);
-            compsToExperiment.add(buttons[i]);
-        }
-        
-        JPanel updatePanel = new JPanel();
-        updatePanel.setLayout(new FlowLayout());
-        
-        updateButton = new JButton();
-        updateButton.setFont(DEF_FONT);
-        updateButton.addActionListener(new ButtonHandler());
-        updateButton.setText("Update days until");
-        
-        updatePanel.add(updateButton);
-        
-        experimentLayout.setHgap(5);
-        //Set up the vertical gap value
-        experimentLayout.setVgap(5);
-        //Set up the layout of the buttons
-        experimentLayout.layoutContainer(compsToExperiment);
-        
-        pane.add(compsToExperiment, BorderLayout.NORTH);
-        pane.add(new JSeparator(), BorderLayout.CENTER);
-        pane.add(updatePanel, BorderLayout.SOUTH);
-
-    }
-    
-    // adds date entered into JTextArea to the respective index "i" in db
-    // updates textarea and date
-    public void addDate(int i) {
-        // set up parser
-        SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
-        
-        // parse, add, and reformat
-        int days = Integer.parseInt(tas[i].getText());
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, days);
-        String next = parser.format(cal.getTime());
-        
-        // change date
-        db[i][1] = next;
-        dates[i].setText(db[i][1]);
-        
-        // reset textarea back to default days
-        tas[i].setText(db[i][2]);
     }
     
     // saves the formatted datebase (db) to a file
@@ -273,6 +315,13 @@ public class TPM extends JFrame {
             }
         }
         writeFile(path, finalString);
+    }
+    
+    // set the default days left for the item clicked
+    public void setDefaultDays(int i) {
+        System.out.println("Setting the default days for index " + i);
+        db[i][2] = tas[i].getText();
+        tas[i].setText(db[i][2]);
     }
     
     // basic filewriter using filename and text to write
@@ -290,45 +339,11 @@ public class TPM extends JFrame {
         }
     }
     
-    // return number of days from today
-    // includes positive and negative differences
-    public int daysFromToday(String nextDate) {
-        System.out.println("nextDate = " + nextDate);
-        SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
-        
-        // parse, add, and reformat
-        int daysBetween = 0;
-        try {
-            Date datedate = parser.parse(nextDate);
-            Calendar date = Calendar.getInstance();
-            date.setTime(datedate);
-            Calendar today = Calendar.getInstance();
-
-            if (date.after(today)) {
-                while (date.after(today)) {
-                    date.add(Calendar.DATE, -1);
-                    daysBetween++;
-                }
-            } else if (date.before(today)) {
-                daysBetween = 1; // offset for correct calculations
-                while (date.before(today)) {
-                    
-                    date.add(Calendar.DATE, 1);
-                    daysBetween--;
-                }
-            }
-            // else, daysBetween stays 0
-            
-        } catch (ParseException pe) {
-            pe.printStackTrace();
-        }
-        return daysBetween;
-    }
-    
     // updates the "days until" field of index "i"
     public void updateDaysUntil(int i) {
         dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
     }
+    
     public void updateDaysUntil() {
         for (int i = 0; i < COUNT; i++) {
             dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
@@ -341,7 +356,6 @@ public class TPM extends JFrame {
         // create a thread for creating the GUI
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                //gets rid of static
                 TPM tpmController = new TPM();
                 tpmController.createAndShowGUI();
             }
