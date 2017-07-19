@@ -57,7 +57,7 @@ public class TPM extends JFrame {
     private final String PACK_NAME = this.getClass().getPackage().getName();
     private final String PRGM_NAME = "Total Productive Maintenance";
     private final String USERNAME = System.getProperty("user.name");
-    private final String[] HEADERS = {"Task", "Days until", "Date", "Days", "", "Set Default"};
+    private final String[] HEADERS = {"Task", "Days until", "Date", "Days", "", ""};
     private final int MAX_GAP = 20;
     private final int WIDTH = HEADERS.length;
     
@@ -134,7 +134,7 @@ public class TPM extends JFrame {
         // Set up components preferred size
         Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
         Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * WIDTH) + MAX_GAP * 2,
-                                                (int)(buttonSize.getHeight() * COUNT * 1.5 + MAX_GAP * 2));
+                                                (int)(buttonSize.getHeight() * (COUNT+1) * 1.5 + MAX_GAP * 2));
         compsToExperiment.setPreferredSize(preferredSize);
 
         for (int i = 0; i < HEADERS.length; i++) {
