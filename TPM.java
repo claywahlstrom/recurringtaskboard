@@ -59,7 +59,7 @@ public class TPM extends JFrame {
     private final String USERNAME = System.getProperty("user.name");
     private final String[] HEADERS = {"Task", "Days until", "Date", "Days", "", "Set Default"};
     private final int MAX_GAP = 20;
-    private final int WIDTH = 5;
+    private final int WIDTH = HEADERS.length;
     
     private int COUNT;
     
@@ -108,6 +108,10 @@ public class TPM extends JFrame {
                     //addDate(i);
                     setDefaultDays(i);
                     saveToFile(PACK_NAME + "/" + FILENAME);
+                    // just a checker to make sure the file is there
+                    if (cloudExists) {
+                        saveToFile(cloudPath + FILENAME);
+                    }
                 }
                 
             }
@@ -162,12 +166,17 @@ public class TPM extends JFrame {
             submitButtons[i].setFont(DEF_FONT);
             submitButtons[i].addActionListener(new ButtonHandler());
             
+            setDefaultButtons[i] = new JButton("Set Default");
+            setDefaultButtons[i].setFont(DEF_FONT);
+            setDefaultButtons[i].addActionListener(new ButtonHandler());
+            
             // add components
             compsToExperiment.add(labels[i]);
             compsToExperiment.add(dayLabels[i]);
             compsToExperiment.add(dates[i]);
             compsToExperiment.add(tas[i]);
             compsToExperiment.add(submitButtons[i]);
+            compsToExperiment.add(setDefaultButtons[i]);
         }
         
         JPanel updatePanel = new JPanel();
@@ -293,6 +302,7 @@ public class TPM extends JFrame {
         dates = new JLabel[COUNT];
         tas = new JTextArea[COUNT];
         submitButtons = new JButton[COUNT];
+        setDefaultButtons = new JButton[COUNT];
         
         if(!new File(cloudPath).exists()){
             System.out.println("Cloud service 'Google Drive' doesn't exist");
@@ -319,7 +329,7 @@ public class TPM extends JFrame {
     
     // set the default days left for the item clicked
     public void setDefaultDays(int i) {
-        System.out.println("Setting the default days for index " + i);
+        System.out.println("Setting the default days for index " + i + " to " + tas[i].getText());
         db[i][2] = tas[i].getText();
         tas[i].setText(db[i][2]);
     }
