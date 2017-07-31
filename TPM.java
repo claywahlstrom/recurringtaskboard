@@ -53,7 +53,6 @@ public class TPM extends JFrame {
     private final Font BOLD_FONT = new Font("Verdana", Font.BOLD, 16);
     private final Font DEF_FONT = new Font("Verdana", Font.PLAIN, 16);
     private final String FILENAME = "java-tpm-db.txt";
-    private final String GAP_LIST[] = {"0", "10", "15", "20"};
     private final String PACK_NAME = this.getClass().getPackage().getName();
     private final String PRGM_NAME = "Total Productive Maintenance";
     private final String USERNAME = System.getProperty("user.name");
@@ -235,7 +234,7 @@ public class TPM extends JFrame {
     // return number of days from today
     // includes positive and negative differences
     public int daysFromToday(String nextDate) {
-        System.out.println("nextDate = " + nextDate);
+        //System.out.println("nextDate = " + nextDate);
         SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
         
         // parse, add, and reformat
