@@ -32,7 +32,7 @@
  */
 
 
-package tpmboard;
+package recurringtaskboard;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -47,14 +47,14 @@ import java.util.Date;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-public class TPM extends JFrame {
+public class RTB extends JFrame {
 
     // init variables
     private final Font BOLD_FONT = new Font("Verdana", Font.BOLD, 16);
     private final Font DEF_FONT = new Font("Verdana", Font.PLAIN, 16);
-    private final String FILENAME = "java-tpm-db.txt";
+    private final String FILENAME = "java-recurringtask-db.txt";
     private final String PACK_NAME = this.getClass().getPackage().getName();
-    private final String PRGM_NAME = "Total Productive Maintenance";
+    private final String PRGM_NAME = "Recurring Task Board";
     private final String USERNAME = System.getProperty("user.name");
     private final String[] HEADERS = {"Task", "Days until", "Date", "Days", "", ""};
     private final int MAX_GAP = 20;
@@ -84,7 +84,7 @@ public class TPM extends JFrame {
     private String[][] db;
     private List<String> lines = new ArrayList<String>();
     
-    public TPM() {
+    public RTB() {
         super();
     }
     
@@ -365,8 +365,8 @@ public class TPM extends JFrame {
         // create a thread for creating the GUI
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                TPM tpmController = new TPM();
-                tpmController.createAndShowGUI();
+                RTB rtbController = new RTB();
+                rtbController.createAndShowGUI();
             }
         });
     }
