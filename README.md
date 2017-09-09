@@ -1,7 +1,7 @@
 # recurringtaskboard
 Recurring Task Board
 
-A GUI for tracking reoccurring tasks, originally written in Python for the console.
+A colored-coded GUI for tracking recurring tasks
 
 The database file "java-recurringtask-db.txt" follows the format below:
 

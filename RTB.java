@@ -50,6 +50,7 @@ import javax.swing.border.EmptyBorder;
 public class RTB extends JFrame {
 
     // init variables
+
     private final Font BOLD_FONT = new Font("Verdana", Font.BOLD, 16);
     private final Font DEF_FONT = new Font("Verdana", Font.PLAIN, 16);
     private final String FILENAME = "java-recurringtask-db.txt";
@@ -197,6 +198,8 @@ public class RTB extends JFrame {
         pane.add(compsToExperiment, BorderLayout.NORTH);
         pane.add(new JSeparator(), BorderLayout.CENTER);
         pane.add(updatePanel, BorderLayout.SOUTH);
+        
+        updateDaysUntil();
 
     }
     
@@ -350,12 +353,20 @@ public class RTB extends JFrame {
     
     // updates the "days until" field of index "i"
     public void updateDaysUntil(int i) {
-        dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
+        int daysuntil = daysFromToday(db[i][1]);
+        dayLabels[i].setText(Integer.toString(daysuntil));
+        if (daysuntil == 0) {
+            dayLabels[i].setForeground(Color.GREEN);
+        } else if (daysuntil < 0) {
+            dayLabels[i].setForeground(Color.RED);
+        } else if (daysuntil > 0) {
+            dayLabels[i].setForeground(Color.BLACK);
+        }
     }
     
     public void updateDaysUntil() {
         for (int i = 0; i < COUNT; i++) {
-            dayLabels[i].setText(Integer.toString(daysFromToday(db[i][1])));
+            updateDaysUntil(i);
         }
     }
     
