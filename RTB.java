@@ -68,7 +68,7 @@ public class RTB extends JFrame {
     private JLabel[] dayLabels;
     private JLabel[] labels;
     private JLabel[] dates;
-    private JTextArea[] tas;
+    private JTextArea[] TAs;
     private JButton[] submitButtons;
     private JButton[] setDefaultButtons;
     private JButton updateButton;
@@ -103,6 +103,7 @@ public class RTB extends JFrame {
                         saveToFile(cloudPath + FILENAME);
                     }
                     updateDaysUntil();
+                    System.out.println();
                 } else if (ae.getSource() == setDefaultButtons[i]) {
                     //System.out.println("Adding date to index " + i);
                     //addDate(i);
@@ -112,6 +113,7 @@ public class RTB extends JFrame {
                     if (cloudExists) {
                         saveToFile(cloudPath + FILENAME);
                     }
+                    System.out.println();
                 }
                 
             }
@@ -159,8 +161,8 @@ public class RTB extends JFrame {
             dates[i].setFont(DEF_FONT);
             dates[i].setHorizontalAlignment(JLabel.CENTER);
             
-            tas[i] = new JTextArea(db[i][2]);
-            tas[i].setFont(DEF_FONT);
+            TAs[i] = new JTextArea(db[i][2]);
+            TAs[i].setFont(DEF_FONT);
             
             submitButtons[i] = new JButton("Submit");
             submitButtons[i].setFont(DEF_FONT);
@@ -174,7 +176,7 @@ public class RTB extends JFrame {
             compsToExperiment.add(labels[i]);
             compsToExperiment.add(dayLabels[i]);
             compsToExperiment.add(dates[i]);
-            compsToExperiment.add(tas[i]);
+            compsToExperiment.add(TAs[i]);
             compsToExperiment.add(submitButtons[i]);
             compsToExperiment.add(setDefaultButtons[i]);
         }
@@ -206,21 +208,26 @@ public class RTB extends JFrame {
     // adds date entered into JTextArea to the respective index "i" in db
     // updates textarea and date
     public void addDate(int i) {
-        // set up parser
-        SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
-        
         // parse, add, and reformat
-        int days = Integer.parseInt(tas[i].getText());
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, days);
-        String next = parser.format(cal.getTime());
-        
-        // change date
-        db[i][1] = next;
-        dates[i].setText(db[i][1]);
-        
-        // reset textarea back to default days
-        tas[i].setText(db[i][2]);
+        try {
+            // set up parser
+            
+            int days = Integer.parseInt(TAs[i].getText());
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DATE, days);
+            SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
+            String next = parser.format(cal.getTime());
+            
+            // change date
+            db[i][1] = next;
+            dates[i].setText(db[i][1]);
+            
+        } catch (Exception e) {
+            System.err.println("Cannot make a date " + e.getMessage().toLowerCase());
+        } finally {
+            // reset textarea back to default days
+            TAs[i].setText(db[i][2]);
+        }
     }
     
     private void createAndShowGUI() {
@@ -290,7 +297,7 @@ public class RTB extends JFrame {
             }
             COUNT = db.length;
             
-            saveToFile(PACK_NAME + "/backup.txt");
+            saveToFile(PACK_NAME + "/backups/" + "backup-" + System.currentTimeMillis() + ".txt");
             
         } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
@@ -302,7 +309,7 @@ public class RTB extends JFrame {
         labels = new JLabel[COUNT];
         dayLabels = new JLabel[COUNT];
         dates = new JLabel[COUNT];
-        tas = new JTextArea[COUNT];
+        TAs = new JTextArea[COUNT];
         submitButtons = new JButton[COUNT];
         setDefaultButtons = new JButton[COUNT];
         
@@ -331,9 +338,10 @@ public class RTB extends JFrame {
     
     // set the default days left for the item clicked
     public void setDefaultDays(int i) {
-        System.out.println("Setting the default days for index " + i + " to " + tas[i].getText());
-        db[i][2] = tas[i].getText();
-        tas[i].setText(db[i][2]);
+        System.out.println("Setting the default days for index " + i + 
+                           " from " + db[i][2] + " to " + TAs[i].getText());
+        db[i][2] = TAs[i].getText();
+        TAs[i].setText(db[i][2]);
     }
     
     // basic filewriter using filename and text to write
@@ -355,12 +363,14 @@ public class RTB extends JFrame {
     public void updateDaysUntil(int i) {
         int daysuntil = daysFromToday(db[i][1]);
         dayLabels[i].setText(Integer.toString(daysuntil));
-        if (daysuntil == 0) {
+        if (daysuntil > 0) {
+            dayLabels[i].setForeground(Color.BLACK);
+        } else if (daysuntil == 0) {
             dayLabels[i].setForeground(Color.GREEN);
+        /* } else if (0 > daysuntil && daysuntil > -(Integer.parseInt(db[i][2])/2.0)) {
+            dayLabels[i].setForeground(Color.ORANGE); */
         } else if (daysuntil < 0) {
             dayLabels[i].setForeground(Color.RED);
-        } else if (daysuntil > 0) {
-            dayLabels[i].setForeground(Color.BLACK);
         }
     }
     
