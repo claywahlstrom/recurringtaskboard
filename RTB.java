@@ -24,13 +24,14 @@
  */
  
 /* 
- * Need to do!
- *     - make methods into setters and getters
+ * Recurring Task Board helps you keep track of your regularly occuring tasks
+ * such as laundry, mowing the lawn, backing up your files, etc.
+ * 
+ *
  * Could implement
  *     - sort items by date
  * 
  */
-
 
 package recurringtaskboard;
 
@@ -57,12 +58,10 @@ public class RTB extends JFrame {
     public static final String PRGM_NAME = "Recurring Task Board";
     public static final String USERNAME = System.getProperty("user.name");
     public static final String[] HEADERS = {"Task", "Days until", "Date", "Days", "", ""};
+    public static final String CLOUD_PATH = "C:/Users/" +  USERNAME + "/Google Drive";
     public static final int COLUMN_COUNT = HEADERS.length;
     public static final int MAX_GAP = 20;
     
-    public static final String CLOUD_PATH = "C:/Users/" +  USERNAME + "/Google Drive/";
-    
-    public boolean cloudExists;
     public int TASK_COUNT;
     
     // initialize JThings
@@ -76,25 +75,55 @@ public class RTB extends JFrame {
     public JButton updateButton;
     
     // initialize classes
-    public GridLayout experimentLayout;
+    public GridLayout mainLayout;
     public String string;
     
     public String[][] db;
     public List<String> lines = new ArrayList<String>();
     
-    public RTB() {
-        super();
-    }
-
     // main method: instantiates and creates the GUI
     public static void main(String[] args) {
         // create a thread for creating the GUI
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 RTB rtbController = new RTB();
-                rtbController.createAndShowGUI();
+                rtbController.loadFile(new File(PACK_NAME + "/" + DB_PATH));
+                rtbController.initializeVars();
+                rtbController.setTitle(PRGM_NAME);
+                rtbController.build();
             }
         });
+    }
+
+    // instantiates
+    public RTB() {
+        super();
+    }
+    
+    // builds and packs the GUI
+    public void build() {
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.addComponentsToPane(this.getContentPane());
+        this.pack();
+        this.setVisible(true);
+    }
+        
+    // initalizes JPanel variables, checks for cloud service
+    public void initializeVars() {
+
+        headerLabels      = new JLabel[COLUMN_COUNT];
+        taskLabels        = new JLabel[TASK_COUNT];
+        dayLabels         = new JLabel[TASK_COUNT];
+        dates             = new JLabel[TASK_COUNT];
+        TAs               = new JTextArea[TASK_COUNT];
+        submitButtons     = new JButton[TASK_COUNT];
+        setDefaultButtons = new JButton[TASK_COUNT];
+        
+        if (cloudExists()){
+            System.out.println("Cloud service 'Google Drive' exists");
+        } else {
+            System.out.println("Cloud service 'Google Drive' doesn't exist");
+        }
     }
     
     // handles button events
@@ -117,9 +146,8 @@ public class RTB extends JFrame {
                 
                 if (found) {
                     saveTasksToFile(PACK_NAME + "/" + DB_PATH);
-                    // make sure the file is there
-                    if (cloudExists) {
-                        saveTasksToFile(CLOUD_PATH + DB_PATH);
+                    if (cloudExists()) {
+                        saveTasksToFile(CLOUD_PATH + "/" + DB_PATH);
                     }
                     System.out.println();
                 }
@@ -131,28 +159,29 @@ public class RTB extends JFrame {
         }
     }
     
+    // @override of super-class, accepts Container object
     public void addComponentsToPane(final Container pane) {
         
-        experimentLayout = new GridLayout(TASK_COUNT + 1, COLUMN_COUNT); // +1 for header row
+        mainLayout = new GridLayout(TASK_COUNT + 1, COLUMN_COUNT); // +1 for header row
         
-        final JPanel compsToExperiment = new JPanel();
-        compsToExperiment.setBorder(new EmptyBorder(10, 10, 10, 10));
-        compsToExperiment.setLayout(experimentLayout);
+        final JPanel mainPanel = new JPanel();
+        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        mainPanel.setLayout(mainLayout);
 
         // Set up components preferred size
         Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
         Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * COLUMN_COUNT) + MAX_GAP * 2,
-                                                (int)(buttonSize.getHeight() * (TASK_COUNT+1) * 1.5 + MAX_GAP * 2));
-        compsToExperiment.setPreferredSize(preferredSize);
+                                                (int)(buttonSize.getHeight() * (TASK_COUNT + 1) * 1.5 + MAX_GAP * 2));
+        mainPanel.setPreferredSize(preferredSize);
 
         for (int i = 0; i < HEADERS.length; i++) {
             headerLabels[i] = new JLabel(HEADERS[i]);
             headerLabels[i].setFont(BOLD_FONT);
             headerLabels[i].setHorizontalAlignment(JLabel.CENTER);
-            compsToExperiment.add(headerLabels[i]);
+            mainPanel.add(headerLabels[i]);
         }
 
-        // Add submitButtons to experimentLayout with Grid Layout
+        // Add submitButtons to mainLayout with Grid Layout
         for (int i = 0; i < TASK_COUNT; i++) {
             
             taskLabels[i] = new JLabel(db[i][0]);
@@ -179,12 +208,12 @@ public class RTB extends JFrame {
             setDefaultButtons[i].addActionListener(new ButtonHandler());
             
             // add components
-            compsToExperiment.add(taskLabels[i]);
-            compsToExperiment.add(dayLabels[i]);
-            compsToExperiment.add(dates[i]);
-            compsToExperiment.add(TAs[i]);
-            compsToExperiment.add(submitButtons[i]);
-            compsToExperiment.add(setDefaultButtons[i]);
+            mainPanel.add(taskLabels[i]);
+            mainPanel.add(dayLabels[i]);
+            mainPanel.add(dates[i]);
+            mainPanel.add(TAs[i]);
+            mainPanel.add(submitButtons[i]);
+            mainPanel.add(setDefaultButtons[i]);
         }
         
         JPanel updatePanel = new JPanel();
@@ -197,32 +226,18 @@ public class RTB extends JFrame {
         
         updatePanel.add(updateButton);
         
-        experimentLayout.setHgap(5);
-        //Set up the vertical gap value
-        experimentLayout.setVgap(5);
-        //Set up the layout of the submitButtons
-        experimentLayout.layoutContainer(compsToExperiment);
+        mainLayout.setHgap(5);
+        mainLayout.setVgap(5);
+        mainLayout.layoutContainer(mainPanel);
         
-        pane.add(compsToExperiment, BorderLayout.NORTH);
+        pane.add(mainPanel, BorderLayout.NORTH);
         pane.add(new JSeparator(), BorderLayout.CENTER);
         pane.add(updatePanel, BorderLayout.SOUTH);
         
         updateDaysUntil();
-
     }
     
-    public void createAndShowGUI() {
-        this.initialize();
-        this.setTitle(PRGM_NAME);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.addComponentsToPane(this.getContentPane());
-        this.pack();
-        this.setVisible(true);
-    }
-    
-    /* return number of days from today
-     * includes positive and negative differences
-     */
+    // returns the number of days from today, + or -
     public int getDaysFromToday(String nextDate) {
         SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
         
@@ -255,23 +270,21 @@ public class RTB extends JFrame {
         return daysBetween;
     }
     
-    public void loadFile() {
+    public void loadFile(File file) {
         try {
             System.out.println("pwd = " + new File(".").getAbsoluteFile());
-            Scanner scr = new Scanner(new File(PACK_NAME + "/" + DB_PATH));
-            scr.useDelimiter("\n");
-            while (scr.hasNext()) {
-                lines.add(scr.next());
+            Scanner scanner = new Scanner(file);
+            scanner.useDelimiter("\n");
+            while (scanner.hasNext()) {
+                lines.add(scanner.next());
             }
-            db = new String[lines.size()][3];
-            Scanner scrn;
-            int num = 0;
-            for (String str : lines) {
-                scrn = new Scanner(str);
-                db[num][0] = scrn.next();
-                db[num][1] = scrn.next();
-                db[num][2] = scrn.next();
-                num++;
+            int linesize = lines.size();
+            db = new String[linesize][3];
+            for (int i = 0; i < linesize; i++) {
+                scanner = new Scanner(lines.get(i));
+                for (int j = 0; j < 3; j++) {
+                    db[i][j] = scanner.next();
+                }
             }
             TASK_COUNT = db.length;
             
@@ -283,26 +296,9 @@ public class RTB extends JFrame {
         }
     }
     
-    // parses db file, reserves space for the JPanel
-    public void initialize() {
-        loadFile();
-
-        // initialize J stuff based on number of items
-        headerLabels = new JLabel[COLUMN_COUNT];
-        taskLabels = new JLabel[TASK_COUNT];
-        dayLabels = new JLabel[TASK_COUNT];
-        dates = new JLabel[TASK_COUNT];
-        TAs = new JTextArea[TASK_COUNT];
-        submitButtons = new JButton[TASK_COUNT];
-        setDefaultButtons = new JButton[TASK_COUNT];
-        
-        if(new File(CLOUD_PATH).exists()){
-            System.out.println("Cloud service 'Google Drive' exists");
-            cloudExists = true;
-        } else {
-            System.out.println("Cloud service 'Google Drive' doesn't exist");
-            cloudExists = false;
-        }
+    // returns whether cloud storage exists
+    public static boolean cloudExists() {
+        return new File(CLOUD_PATH).exists();
     }
     
     /* saves the formatted datebase (db) to a file
