@@ -24,9 +24,8 @@
  */
  
 /* 
- * Recurring Task Board helps you keep track of your regularly occuring tasks
+ * Recurring Task Board can help you keep track of your regularly occurring tasks
  * such as laundry, mowing the lawn, backing up your files, etc.
- * 
  *
  * Could implement
  *     - sort items by date
@@ -63,23 +62,18 @@ public class RTB extends JFrame {
     public static final int MAX_BACKUP = 15;
     public static final int MAX_GAP = 20;
     
-    public int TASK_COUNT;
-    
     // initialize JThings
-    public JLabel[] headerLabels;
-    public JLabel[] dayLabels;
-    public JLabel[] taskLabels;
-    public JLabel[] dates;
-    public JTextArea[] inputAreas;
-    public JButton[] submitButtons;
-    public JButton[] setDefaultButtons;
-    public JButton updateButton;
-
-    public GridLayout mainLayout;
-    public String string;
+    private JLabel[] headerLabels;
+    private JLabel[] dayLabels;
+    private JLabel[] taskLabels;
+    private JLabel[] dates;
+    private JTextArea[] inputAreas;
+    private JButton[] submitButtons;
+    private JButton[] setDefaultButtons;
+    private JButton updateButton;
     
-    public String[][] db;
-    public List<String> lines = new ArrayList<String>();
+    private String[][] db;
+    private List<String> lines = new ArrayList<String>();
     
     // main method: instantiates and creates the GUI
     public static void main(String[] args) {
@@ -90,19 +84,18 @@ public class RTB extends JFrame {
                 rtbController.deleteOld();
                 rtbController.loadFile(new File(PACK_NAME + "/" + DB_PATH));
                 rtbController.initializeVars();
-                rtbController.setTitle(PRGM_NAME);
-                rtbController.build();
+                rtbController.render();
             }
         });
     }
 
-    // instantiates
+    // creates a new task manager
     public RTB() {
-        super();
+        super(PRGM_NAME);
     }
     
-    // builds and packs the GUI
-    public void build() {
+    // renders and packs the GUI
+    public void render() {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addComponentsToPane(this.getContentPane());
         this.pack();
@@ -115,16 +108,16 @@ public class RTB extends JFrame {
         }
     }
         
-    // initalizes JPanel variables, checks for cloud service
+    // initializes JPanel variables, checks if cloud service exists
     public void initializeVars() {
 
         headerLabels      = new JLabel[HEADERS.length];
-        taskLabels        = new JLabel[TASK_COUNT];
-        dayLabels         = new JLabel[TASK_COUNT];
-        dates             = new JLabel[TASK_COUNT];
-        inputAreas        = new JTextArea[TASK_COUNT];
-        submitButtons     = new JButton[TASK_COUNT];
-        setDefaultButtons = new JButton[TASK_COUNT];
+        taskLabels        = new JLabel[db.length];
+        dayLabels         = new JLabel[db.length];
+        dates             = new JLabel[db.length];
+        inputAreas        = new JTextArea[db.length];
+        submitButtons     = new JButton[db.length];
+        setDefaultButtons = new JButton[db.length];
         
         System.out.print("Cloud service 'Google Drive' ");
         if (cloudExists()){
@@ -135,52 +128,19 @@ public class RTB extends JFrame {
         System.out.println();
     }
     
-    // handles button events
-    private class ButtonHandler implements ActionListener {
-        public void actionPerformed(ActionEvent ae) {
-            boolean flush = false;
-            for (int i = 0; i < TASK_COUNT; i++) {
-                boolean found = false;
-                if (ae.getSource() == submitButtons[i]) {
-                    // one of the submit buttons was pressed
-                    found = setDays(i);
-                } else if (ae.getSource() == setDefaultButtons[i]) {
-                    // one of the set default buttons was pressed
-                    found = setDefaultDays(i);
-                }
-                
-                if (found) {
-                    saveTasksToFile(PACK_NAME + "/" + DB_PATH);
-                    backup();
-                    if (cloudExists()) {
-                        saveTasksToFile(CLOUD_PATH + "/" + DB_PATH);
-                    }
-                    flush = true;
-                }
-            }
-            // if (ae.getSource() == updateButton) {
-                // updateDaysUntil();
-            // }
-            if (flush) {
-                System.out.println();
-            }
-            updateDaysUntil(); // behavior when any button is pressed
-        }
-    }
-    
     // @override of super-class, accepts Container object
     public void addComponentsToPane(final Container pane) {
         
-        mainLayout = new GridLayout(TASK_COUNT + 1, HEADERS.length); // +1 for header row
+        GridLayout mainLayout = new GridLayout(db.length + 1, HEADERS.length); // +1 for header row
         
-        final JPanel mainPanel = new JPanel();
+        JPanel mainPanel = new JPanel();
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         mainPanel.setLayout(mainLayout);
 
         // Set up components preferred size
         Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
         Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * HEADERS.length) + MAX_GAP * 2,
-                                                (int)(buttonSize.getHeight() * (TASK_COUNT + 1) * 1.5 + MAX_GAP * 2));
+                                                (int)(buttonSize.getHeight() * (db.length + 1) * 1.5 + MAX_GAP * 2));
         mainPanel.setPreferredSize(preferredSize);
 
         for (int i = 0; i < HEADERS.length; i++) {
@@ -191,9 +151,9 @@ public class RTB extends JFrame {
         }
 
         // Add submitButtons to mainLayout with Grid Layout
-        for (int i = 0; i < TASK_COUNT; i++) {
+        for (int i = 0; i < db.length; i++) {
             
-            taskLabels[i] = new JLabel(db[i][0].replace("_", " "));
+            taskLabels[i] = new JLabel(db[i][0]);
             taskLabels[i].setFont(BASE_FONT);
             
             dayLabels[i] = new JLabel();
@@ -244,6 +204,16 @@ public class RTB extends JFrame {
         
         updateDaysUntil();
     }
+        
+    // backs up the db
+    public void backup() {
+        saveTasksToFile(PACK_NAME + "/backups/backup-" + System.currentTimeMillis() + ".txt");
+    }
+    
+    // returns whether cloud storage exists
+    public boolean cloudExists() {
+        return new File(CLOUD_PATH).exists();
+    }    
     
     // returns the number of days from today, + or -
     public int getDaysFromToday(String nextDate) {
@@ -285,13 +255,9 @@ public class RTB extends JFrame {
                 lines.add(scanner.next());
             }
             db = new String[lines.size()][DB_COLUMNS];
-            for (int i = 0; i < db.length; i++) {
-                scanner = new Scanner(lines.get(i));
-                for (int j = 0; j < DB_COLUMNS; j++) {
-                    db[i][j] = scanner.next();
-                }
+            for (int i = 0; i < lines.size(); i++) {
+                db[i] = lines.get(i).split(", ");
             }
-            TASK_COUNT = db.length;
             backup();
 
         } catch (FileNotFoundException fnfe) {
@@ -300,29 +266,15 @@ public class RTB extends JFrame {
         }
     }
     
-    // backs up the db
-    public void backup() {
-        saveTasksToFile(PACK_NAME + "/backups/backup-" + System.currentTimeMillis() + ".txt");
-    }
-    
-    // returns whether cloud storage exists
-    public static boolean cloudExists() {
-        return new File(CLOUD_PATH).exists();
-    }
-    
-    /* saves the formatted datebase (db) to a file
-     * assumes db exists and is filled
-     * writes "string" to file using the writeText method
-     */
+    // saves the formatted date base to a file
+    // assumes db exists and is filled
+    // writes "string" to file using the writeText method
     public void saveTasksToFile(String path) {
-        string = new String();
-        for (int i = 0; i < TASK_COUNT; i++) {
-            string += db[i][0] + " " + db[i][1] + " " + db[i][2];
-            if (i < TASK_COUNT - 1) {
-                string += "\r\n";
-            }
+        String string = "";
+        for (int i = 0; i < db.length; i++) {
+            string += db[i][0] + ", " + db[i][1] + ", " + db[i][2] + "\r\n";
         }
-        writeText(path, string);
+        writeText(path, string.trim());
     }
     
     // set the default days left for the item clicked
@@ -357,12 +309,12 @@ public class RTB extends JFrame {
     
     // updates all of the days column for all of the tasks
     public void updateDaysUntil() {
-        for (int i = 0; i < TASK_COUNT; i++) {
+        for (int i = 0; i < db.length; i++) {
             updateDaysUntil(i);
         }
     }
     
-    // updates the "days until" field of index "i"
+    // updates the "days until" field of the given index
     public void updateDaysUntil(int i) {
         int daysuntil = getDaysFromToday(db[i][1]);
         dayLabels[i].setText(Integer.toString(daysuntil));
@@ -377,10 +329,10 @@ public class RTB extends JFrame {
         }
     }
     
-    // adds date entered into JTextArea to the respective index "i" in db.
-    // updates textarea and date.
+    // adds the number of days in the text box to the given index,
+    // updates text area and date.
     public boolean setDays(int i) {
-        boolean set = false;
+        boolean success = false;
         try {
             // set up parser
             int days = Integer.parseInt(inputAreas[i].getText());
@@ -392,14 +344,48 @@ public class RTB extends JFrame {
             // change date
             db[i][1] = next;
             dates[i].setText(db[i][1]);
-            System.out.println("Modifying the date at index " + i); // prints if successful
-            set = true;
+            System.out.println("Modifying the date at index " + i); // only prints if successful
+            success = true;
         } catch (Exception e) {
             System.err.println("Cannot make a date " + e.getMessage().toLowerCase());
         } finally {
-            // reset textarea back to default days
+            // reset text area back to default days
             inputAreas[i].setText(db[i][2]);
         }
-        return set;
+        return success;
     }
+    
+    // handles button events
+    private class ButtonHandler implements ActionListener {
+        public void actionPerformed(ActionEvent ae) {
+            boolean flushOutput = false;
+            for (int i = 0; i < db.length; i++) {
+                boolean found = false;
+                if (ae.getSource() == submitButtons[i]) {
+                    // one of the submit buttons was pressed
+                    found = setDays(i);
+                } else if (ae.getSource() == setDefaultButtons[i]) {
+                    // one of the set default buttons was pressed
+                    found = setDefaultDays(i);
+                }
+                
+                if (found) {
+                    saveTasksToFile(PACK_NAME + "/" + DB_PATH);
+                    backup();
+                    if (cloudExists()) {
+                        saveTasksToFile(CLOUD_PATH + "/" + DB_PATH);
+                    }
+                    flushOutput = true;
+                }
+            }
+            // if (ae.getSource() == updateButton) {
+                // updateDaysUntil();
+            // }
+            if (flushOutput) {
+                System.out.println();
+            }
+            updateDaysUntil(); // behavior when any button is pressed
+        }
+    }
+   
 }

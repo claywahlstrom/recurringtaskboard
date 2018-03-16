@@ -5,6 +5,8 @@ A colored-coded GUI for tracking multiple recurring tasks
 
 The database file "java-recurringtask-db.txt" follows the format below:
 
-    name_of_item dateofnexttime dayinterval
+    name of item, dateofnexttime, dayinterval
     
-Items must be added when the program is not active and the name of the item must not contain spaces, as a space is the default delimiter for `Scanner` objects.
+Items are delimited by commas and a space. Therefore, you must not use commas in any of the fields in the database.
+
+If you receive an ArrayOutOfBoundsException than you forgot a comma somewhere.
