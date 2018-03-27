@@ -53,6 +53,7 @@ public class RTB extends JFrame {
     public static final Font BASE_FONT = new Font("Verdana", Font.PLAIN, 16);
     public static final Font BOLD_FONT = new Font("Verdana", Font.BOLD, 16);
     public static final String DB_PATH = "java-recurringtask-db.txt";
+    public static final String LINE_ENDING = "\r\n";
     public static final String PACK_NAME = RTB.class.getPackage().getName();
     public static final String PRGM_NAME = "Recurring Task Board";
     public static final String USERNAME = System.getProperty("user.name");
@@ -139,7 +140,7 @@ public class RTB extends JFrame {
 
         // Set up components preferred size
         Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
-        Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * HEADERS.length) + MAX_GAP * 2,
+        Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * HEADERS.length * 1.02) + MAX_GAP * 2,
                                                 (int)(buttonSize.getHeight() * (db.length + 1) * 1.5 + MAX_GAP * 2));
         mainPanel.setPreferredSize(preferredSize);
 
@@ -250,7 +251,7 @@ public class RTB extends JFrame {
         try {
             System.out.println("pwd = " + new File(".").getAbsoluteFile());
             Scanner scanner = new Scanner(file);
-            scanner.useDelimiter("\n");
+            scanner.useDelimiter(LINE_ENDING);
             while (scanner.hasNext()) {
                 lines.add(scanner.next());
             }
@@ -272,7 +273,7 @@ public class RTB extends JFrame {
     public void saveTasksToFile(String path) {
         String string = "";
         for (int i = 0; i < db.length; i++) {
-            string += db[i][0] + ", " + db[i][1] + ", " + db[i][2] + "\r\n";
+            string += db[i][0] + ", " + db[i][1] + ", " + db[i][2] + LINE_ENDING;
         }
         writeText(path, string.trim());
     }
@@ -335,7 +336,7 @@ public class RTB extends JFrame {
         boolean success = false;
         try {
             // set up parser
-            int days = Integer.parseInt(inputAreas[i].getText());
+            int days = Integer.parseInt(inputAreas[i].getText().trim());
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DATE, days);
             SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yyyy");
@@ -347,7 +348,7 @@ public class RTB extends JFrame {
             System.out.println("Modifying the date at index " + i); // only prints if successful
             success = true;
         } catch (Exception e) {
-            System.err.println("Cannot make a date " + e.getMessage().toLowerCase());
+            System.err.println("Cannot change the date of " + e.getMessage());
         } finally {
             // reset text area back to default days
             inputAreas[i].setText(db[i][2]);
