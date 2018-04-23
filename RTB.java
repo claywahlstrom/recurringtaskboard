@@ -140,7 +140,7 @@ public class RTB extends JFrame {
 
         // Set up components preferred size
         Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
-        Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * HEADERS.length * 1.02) + MAX_GAP * 2,
+        Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * HEADERS.length * 1.0) + MAX_GAP * 2,
                                                 (int)(buttonSize.getHeight() * (db.length + 1) * 1.5 + MAX_GAP * 2));
         mainPanel.setPreferredSize(preferredSize);
 
@@ -273,7 +273,7 @@ public class RTB extends JFrame {
     public void saveTasksToFile(String path) {
         String string = "";
         for (int i = 0; i < db.length; i++) {
-            string += db[i][0] + ", " + db[i][1] + ", " + db[i][2] + LINE_ENDING;
+            string += String.join(", ", db[i]) + LINE_ENDING;
         }
         writeText(path, string.trim());
     }
