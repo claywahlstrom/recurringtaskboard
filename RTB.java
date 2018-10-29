@@ -53,7 +53,7 @@ public class RTB extends JFrame {
     // initialize variables
     public static final Font BASE_FONT = new Font("Verdana", Font.PLAIN, 16);
     public static final Font BOLD_FONT = new Font("Verdana", Font.BOLD, 16);
-    public static final String DB_PATH = "java-recurringtask-db.txt";
+    public static final String DB_PATH = "recurringtasks-db.txt";
     public static final String LINE_ENDING = "\r\n";
     public static final String PACK_NAME = RTB.class.getPackage().getName();
     public static final String PRGM_NAME = "Recurring Task Board";
@@ -82,7 +82,6 @@ public class RTB extends JFrame {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 RTB rtbController = new RTB();
-                rtbController.deleteOld();
                 rtbController.loadFile(new File(PACK_NAME + "/" + DB_PATH));
                 rtbController.initializeVars();
                 rtbController.render();
@@ -252,6 +251,7 @@ public class RTB extends JFrame {
                 db[i] = lines.get(i).split(", ");
             }
             backup();
+            deleteOld();
 
         } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
@@ -291,12 +291,12 @@ public class RTB extends JFrame {
             // change date
             db[i][1] = next;
             dates[i].setText(db[i][1]);
-            System.out.println("Modifying the date at index " + i); // only prints if successful
+            System.out.println("Modifying the date for \"" + db[i][0] + "\" (index " + i + ")"); // only prints if successful
             success = true;
         } catch (Exception e) {
             System.err.println("Cannot change the date of " + e.getMessage());
         } finally {
-            // reset text area back to default days
+            // rollback transaction
             inputAreas[i].setText(db[i][2]);
         }
         return success;
@@ -306,8 +306,8 @@ public class RTB extends JFrame {
     public boolean setDefaultDays(int i) {
         boolean set = false;
         if (!inputAreas[i].getText().equals("")) {
-            System.out.println("Setting the default days for index " + i + 
-                           " from " + db[i][2] + " to " + inputAreas[i].getText());
+            System.out.println("Setting the default days for \"" + db[i][0] + "\" (index " + i + 
+                           ") from " + db[i][2] + " to " + inputAreas[i].getText());
             db[i][2] = inputAreas[i].getText();
             set = true;
         } else {
@@ -342,13 +342,15 @@ public class RTB extends JFrame {
     // writes the given text to the file path
     public void writeTextToFile(String path, String text) {
         try {
+            System.out.print("Writing to " + path + "... ");
             File file = new File(path);
             file.createNewFile();
             FileWriter fw = new FileWriter(file);
             fw.write(text);
             fw.close();
-            System.out.println(path + " written");
+            System.out.println("Done");
         } catch (IOException ioe) {
+            System.out.println("Failed");
             ioe.printStackTrace();
             System.exit(0);
         }
@@ -371,6 +373,7 @@ public class RTB extends JFrame {
                 if (found) {
                     saveTasksToFile(PACK_NAME + "/" + DB_PATH);
                     backup();
+                    deleteOld();
                     if (checkCloudExists()) {
                         saveTasksToFile(CLOUD_PATH + "/" + DB_PATH);
                     }
