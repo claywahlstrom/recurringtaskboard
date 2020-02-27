@@ -84,6 +84,10 @@ public class RTB extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                File backups = new File(PACK_NAME + "/backups");
+                if (!backups.exists()) {
+                    backups.mkdir();
+                }
                 RTB rtbController = new RTB();
                 rtbController.loadFile(new File(PACK_NAME + "/" + DB_PATH));
                 rtbController.initializeVars();
