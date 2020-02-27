@@ -38,6 +38,7 @@ package recurringtaskboard;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.List;
@@ -54,6 +55,7 @@ public class RTB extends JFrame {
     public static final Font BASE_FONT = new Font("Verdana", Font.PLAIN, 16);
     public static final Font BOLD_FONT = new Font("Verdana", Font.BOLD, 16);
     public static final String DB_PATH = "recurringtasks-db.txt";
+    public static final String DB_EXAMPLE_PATH = "recurringtasks-db-example.txt";
     public static final String LINE_ENDING = "\r\n";
     public static final String PACK_NAME = RTB.class.getPackage().getName();
     public static final String PRGM_NAME = "Recurring Task Board";
@@ -248,6 +250,12 @@ public class RTB extends JFrame {
     public void loadFile(File file) {
         try {
             System.out.println("pwd = " + new File(".").getAbsoluteFile());
+            if (!file.isFile()) {
+                // Create db from example if not exists
+                Path examplePath = new File(PACK_NAME + "/" + DB_EXAMPLE_PATH).getAbsoluteFile().toPath();
+                Path dbPath = new File(PACK_NAME + "/" + DB_PATH).getAbsoluteFile().toPath();
+                Files.copy(examplePath, dbPath, StandardCopyOption.REPLACE_EXISTING);
+            }
             Scanner scanner = new Scanner(file);
             scanner.useDelimiter(LINE_ENDING);
             while (scanner.hasNext()) {
@@ -263,7 +271,10 @@ public class RTB extends JFrame {
 
         } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
-            System.exit(0);
+            System.exit(1);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -360,7 +371,7 @@ public class RTB extends JFrame {
         } catch (IOException ioe) {
             System.out.println("Failed");
             ioe.printStackTrace();
-            System.exit(0);
+            System.exit(1);
         }
     }
 
