@@ -325,9 +325,10 @@ public class RTB extends JFrame {
         return success;
     }
 
-    // set the default days interval for the given index
+    // set the default days interval for the given index.
+    // returns true if successful, otherwise false
     public boolean setDefaultDays(int i) {
-        boolean set = false;
+        boolean isError = false;
         String text = deltaTextAreas[i].getText();
         if (!text.equals("")) {
             System.out.println("Setting the default days for \"" + db[i][0]
@@ -336,12 +337,12 @@ public class RTB extends JFrame {
             db[i][2] = text;
             // update the UI
             daysLabels[i].setText(text);
-            set = true;
         } else {
             System.err.println("Cannot set default days to a blank string.");
+            isError = true;
         }
         deltaTextAreas[i].setText(db[i][2]);
-        return set;
+        return !isError;
     }
 
     // updates all of the days column for all of the tasks
