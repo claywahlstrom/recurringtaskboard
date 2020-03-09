@@ -1,12 +1,15 @@
-# recurringtaskboard
-Recurring Task Board
+# Recurring Task Board
 
-A colored-coded GUI for tracking multiple recurring tasks
+A colored-coded GUI for tracking multiple recurring tasks.
 
-The database file "java-recurringtask-db.txt" follows the format below:
+On first run, the local database will be created using the example database. 
 
-    name of item, dateofnexttime, dayinterval
-    
-Items are delimited by commas and a space. Therefore, you must not use commas in any of the fields in the database.
+The local database `recurringtasks-db.txt` should follow this format:
 
-If you receive an ArrayIndexOutOfBoundsException then you forgot a comma somewhere.
+    name of item, date of next occurrence, occurrence interval in days
+
+**Warning**: Commas must not be used in the item name because they delimit a new task column.
+
+## Tips
+
+If you receive a Java's `ArrayIndexOutOfBoundsException`, then you forgot a comma somewhere in your local database.
