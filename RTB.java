@@ -65,6 +65,7 @@ public class RTB extends JFrame {
     public static final int DB_COLUMNS = 3;
     public static final int MAX_BACKUP = 15;
     public static final int MAX_GAP = 20;
+    public static final int TASK_OVERFLOW = 20;
 
     // initialize JThings
     private JLabel[] headerLabels;
@@ -112,6 +113,13 @@ public class RTB extends JFrame {
 
         // Set up components preferred size
         Dimension buttonSize = new JButton("Just a fake button").getPreferredSize();
+
+        // If the task buttons will overflow the display
+        if (db.length >= TASK_OVERFLOW) {
+            // Scale the preferred button height
+            buttonSize.setSize(buttonSize.getWidth(), (int)(buttonSize.getHeight() * TASK_OVERFLOW / db.length));
+        }
+
         Dimension preferredSize = new Dimension((int)(buttonSize.getWidth() * HEADERS.length * 0.9) + MAX_GAP * 2,
                                                 (int)(buttonSize.getHeight() * (db.length + 1) * 1.5 + MAX_GAP * 2));
         mainPanel.setPreferredSize(preferredSize);
